@@ -13,7 +13,7 @@ public class Tableaux {
 
    
     
-    public static final String ANSI_RESET = "\u001B[0m";
+     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_GREEN = "\u001B[32m";
@@ -63,13 +63,14 @@ public class Tableaux {
 
 
 
-    public Tableaux() {
-        root = null;
-    }
+    public Tableaux() {root = null;}
     public class Node {
 
         private boolean contradiction;
         private LinkedList<String> formulas = new LinkedList<>();
+        private LinkedList<String> tableFormulas = new LinkedList<>();
+        private LinkedList<String> reasons = new LinkedList<>();
+
         private int x;
         private int y;
 
@@ -100,26 +101,16 @@ public class Tableaux {
 
         public Node(LinkedList<String> formulas, boolean contradiction) {
             this.formulas = formulas;
+            this.tableFormulas=formulas;
             this.contradiction = contradiction;
         }
     }
 
+
+    public int height() {return height(root);}
     private int height(Node x) {
         if (x == null) return -1;
         return 1 + Math.max(height(x.left), height(x.right));
-    }
-    public int height() {
-        return height(root);
-    }
-    public static void printString(String[] s) {
-        System.out.print("{");
-        for (int i = 0; i < s.length; i++) {
-            System.out.print(s[i]);
-            if (!(i == s.length - 1)) {
-                System.out.print(",");
-            }
-        }
-        System.out.println("}");
     }
     public static void printLinkedList(LinkedList ll) {
 
@@ -132,27 +123,7 @@ public class Tableaux {
         }
         System.out.println("}");
     }
-    public static int indexOf(ArrayList<Character> list, Character c) {
-        int index = 0;
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) == c) {
-                index = i;
-            }
-        }
-        return index;
-    }
-    public static boolean Acontains(ArrayList<Character> list, Character c) {
-        for (Character i : list) {
-            if (i == c) return true;
-        }
-        return false;
-    }
-    public static boolean Lcontains(LinkedList<Character> list, Character c) {
-        for (Character i : list) {
-            if (i == c) return true;
-        }
-        return false;
-    }
+
 
 
     /**
@@ -231,7 +202,6 @@ public class Tableaux {
      * use this to change logic operators to html syntax
      */
     public void replaceHTML(){
-
         for(int i=0;i<listOfNodes.size();i++){
             for(int j=0;j<listOfNodes.get(i).formulas.size();j++){
                 String currFormula=listOfNodes.get(i).formulas.get(j);
@@ -246,16 +216,12 @@ public class Tableaux {
             }
 
         }
-
-
     }
 
 
 
 
-    public void printGraph(int hBetween){
-        inorderTraversal(root,0,hBetween);
-    }
+    public void printGraph(int hBetween){inorderTraversal(root,0,hBetween);}
     /**
      * set (x,y) coordinates for each node in tree
      * @param node
@@ -306,29 +272,7 @@ public class Tableaux {
 
     }
 
-    String treeString="";
-    public void treeAsList(Node root){
 
-        //print stuff in between brackets
-        treeString=treeString+"[";
-        for(String s: root.formulas){
-            treeString=treeString+s;
-            if(root.formulas.indexOf(s)!=(root.formulas.size()-1)){
-                treeString=treeString+",";
-            }
-
-        }
-
-
-        if(root.left!=null)
-            treeAsList(root.left);
-        if(root.right!=null)
-            treeAsList(root.right);
-
-
-        treeString=treeString+"]";
-
-    }
 
     /**
      * level-order,BFS
@@ -382,14 +326,7 @@ public class Tableaux {
 
 
 
-
-
-
-
-
-    public void insert(LinkedList<String> data) {
-        root = insert(root, data);
-    }
+    public void insert(LinkedList<String> data) {root = insert(root, data);}
     private Node insert(Node node, LinkedList<String> data) {
         if (node == null)
             node = new Node(data, false);
@@ -423,7 +360,7 @@ public class Tableaux {
 
 
     /**
-     * @param node object which has the formulas which are checked
+     * @param node object has formulas which are checked
      * @return true if both A and ~A is found in list of statements
      */
     public boolean isContradiction(Node node) {
@@ -434,7 +371,7 @@ public class Tableaux {
                 for (int i = 0; i < length; i++) {
                     String temp = node.formulas.get(i);
                     node.formulas.remove(temp);
-                    isContradiction(node);
+                    if(isContradiction(node)) return true;
                     node.formulas.add(temp);
                 }
             }
@@ -446,7 +383,8 @@ public class Tableaux {
                 node.contradiction = true;
                 return true;
             }
-        } else {
+        }
+        else {
             System.out.println("size of list " + node.formulas + " <2 no contradiction can be established");
             return false;
         }
@@ -817,6 +755,7 @@ public class Tableaux {
 
 
 
+
     /**
      * Input: group of logic formulas and conclusion
      * Output: Tableaux proof
@@ -840,7 +779,7 @@ public class Tableaux {
         System.out.println(ANSI_GREEN+node.formulas+ANSI_RESET);
 
         if (isContradiction(node)) {
-            System.out.println("CONTRADICTION return true");
+            System.out.println("CONTRADICTION");
             return true;
         }
 
@@ -852,21 +791,9 @@ public class Tableaux {
 
 
 
-            //*****************************
-            System.out.println(ANSI_RED);
-            System.out.println(node.formulas + "  has a formula w/ operator other than V");
-            System.out.println("list of formula operators...");
-            for (String formula : node.formulas) {
-                String[] parseformula = parseFormula(formula);
-                String op = parseformula[1];
-                System.out.println("operator for formula " + formula + " is " + op);
-            }
-            System.out.println(ANSI_RESET);
-            //*****************************
-
 
             if (isContradiction(node)) {
-                System.out.println("CONTRADICTION return true");
+                System.out.println("CONTRADICTION");
                 return true;
             }
 
@@ -874,8 +801,6 @@ public class Tableaux {
             for (int i = 0; i < node.formulas.size(); i++) {
                 node.formulas.set(i, removeWhiteSpaces(node.formulas.get(i)));
                 LinkedList<String> f = node.formulas;
-
-
 
 
 
@@ -925,29 +850,33 @@ public class Tableaux {
                         op = parseformula[1];
                         B = parseformula[2];
 
-                        //whenever there is an equivalence for some formula,
-                        //delete that formula and replace it w/ equivalence
-                        if (f.size() != 0) {
-                            int index = f.indexOf(f.get(i));
-                            f.remove(index);
-                        }
+
+
+                        f.remove(i);
+
                         //AND: ~(A&B) <-> ~AV~B
                         if (op.equals("&")) {
+
                             A = "~" + A;
                             op = "V";
                             B = "~" + B;
 
                             //~AV~B
                             f.add(A + op + B);
+
+
                         }
                         //OR: ~(AVB) <-> (~A&~B)
                         else if (op.equals("V")) {
+
                             A = "~" + A;
                             B = "~" + B;
 
                             //~A&~B
                             f.add(A);
                             f.add(B);
+
+
                         }
                         //CONDITIONAL: ~(A>B) <-> A&~B
                         else if (op.equals(">")) {
@@ -956,6 +885,8 @@ public class Tableaux {
                             //~B&A
                             f.add(A);
                             f.add(B);
+
+
                         }
                         //EQUIVALENCE: ~(A<B) <-> (A&~B)V(~A&B)
                         else if (op.equals("<")) {
@@ -965,9 +896,8 @@ public class Tableaux {
 
                             //(A&~B)V(B&~A)
                             f.add(A + op + B);
+
                         }
-
-
                         resolveNegations(node);
 
 
@@ -982,30 +912,33 @@ public class Tableaux {
                 else if (!op.equals("V")) {
                     System.out.println(f.get(i) + "  has a formula w/ operator other than V and has no ~");
 
+                    f.remove(i);
 
-                    if (f.size() != 0) {
-                        int index = f.indexOf(f.get(i));
-                        f.remove(index);
-                    }
+
                     //AND: (A&B) <-> A,B
                     if (op.equals("&")) {
+
                         f.add(A);
                         f.add(B);
                     }
                     //CONDITIONAL: A>B <-> ~AVB
                     else if (op.equals(">")) {
+
                         A = "~" + A;
                         op = "V";
 
                         f.add(A + op + B);
+
                     }
                     //EQUIVALENCE: A<B <-> (A&B)V(~A&~B)
                     else if (op.equals("<")) {
+
                         A = "(" + A + "&" + B + ")";
                         op = "V";
                         B = "(" + "~" + B + "&" + "~" + A + ")";
 
                         f.add(A + op + B);
+
                     }
 
 
@@ -1019,14 +952,11 @@ public class Tableaux {
 
         //after you check for equivalences create left + right nodes for every DISJUNCTION
         for (int i = 0; i<node.formulas.size(); i++) {
-            System.out.println(node.formulas.get(i)+" is atomic formula or DISJUNCTION ");
+
 
 
             //if formula is a DISJUNCTION
             if (node.formulas.get(i).length()>2) {
-
-
-                System.out.println(node.formulas.get(i)+" is a DISJUNCTION");
 
 
                 String[] parseformula = parseFormula(node.formulas.get(i));
@@ -1049,31 +979,26 @@ public class Tableaux {
 
 
 
-                Node nodeD1 = new Node(disjunct1, false);
-                Node nodeD2 = new Node(disjunct2, false);
+                Node nodeD1 = new Node(disjunct1,false);
+                Node nodeD2 = new Node(disjunct2,false);
 
 
-                System.out.println("nodeD1: ");
-                printLinkedList(nodeD1.formulas);
-                System.out.println("nodeD2: ");
-                printLinkedList(nodeD2.formulas);
+
 
 
                 node.setLeft(nodeD1);
                 node.setRight(nodeD2);
 
 
-                if(parseTableaux(node.right) && parseTableaux(node.left)){
+
+
+                if(parseTableaux(node.left) && parseTableaux(node.right))
                     return true;
-                }
 
 
 
             }
-
-
         }
-
         return false;
 
     }
@@ -1134,14 +1059,11 @@ public class Tableaux {
 
 
 
-        formulasTest.add("(~AVD)>(B>F)");
-        formulasTest.add("(BVC)>(AVE)");
-        formulasTest.add("AVB");
-        formulasTest.add("~A");
-        formulasTest.add("~(EVF)");
 
 
-
+        formulasTest.add("P>R");
+        formulasTest.add("Q>R");
+        formulasTest.add("~((PVQ)>R)");
 
         t.insert(formulasTest);
         System.out.println("root node = " + t.root.formulas);
@@ -1166,9 +1088,7 @@ public class Tableaux {
 
 
 
-        try {
-            ImageIO.write(t.img, "PNG", t.image);
-        }
+        try {ImageIO.write(t.img, "PNG", t.image);}
         catch (Exception e) {
             System.out.println("not working");
             System.exit(1);
