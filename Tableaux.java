@@ -7,21 +7,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Stack;
 
-
 public class Tableaux {
 
 
-   
-    
-     public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
 
 
 
@@ -37,13 +25,6 @@ public class Tableaux {
     public static String ROW_END = "</tr>";
     public static String COLUMN_START = "<td>";
     public static String COLUMN_END = "</td>";
-
-
-
-
-
-
-
 
 
 
@@ -107,22 +88,8 @@ public class Tableaux {
     }
 
 
-    public int height() {return height(root);}
-    private int height(Node x) {
-        if (x == null) return -1;
-        return 1 + Math.max(height(x.left), height(x.right));
-    }
-    public static void printLinkedList(LinkedList ll) {
 
-        System.out.print("{");
-        for (int i = 0; i < ll.size(); i++) {
-            System.out.print(ll.get(i));
-            if (!(i == ll.size() - 1)) {
-                System.out.print(",");
-            }
-        }
-        System.out.println("}");
-    }
+
 
 
 
@@ -290,7 +257,7 @@ public class Tableaux {
         while (!queue.isEmpty()) {
             currentNode = queue.poll();
             countCurrent--;
-            System.out.print(ANSI_CYAN+currentNode.formulas+ANSI_RESET);
+            System.out.print(currentNode.formulas);
 
 
             if (currentNode.left != null)
@@ -318,7 +285,7 @@ public class Tableaux {
     public void inorder(Node node,String lr){
         if(node!=null){
             System.out.print(lr+" = ");
-            System.out.println(ANSI_BLUE+node.formulas+ANSI_RESET);
+            System.out.println(node.formulas);
             inorder(node.right,lr+".right");
             inorder(node.left,lr+".left");
         }
@@ -346,13 +313,11 @@ public class Tableaux {
     public String removeWhiteSpaces(String str) {
         char[] strArray = str.toCharArray();
         StringBuffer sb = new StringBuffer();
-
         for (int i = 0; i < strArray.length; i++) {
             if ((strArray[i] != ' ') && (strArray[i] != '\t')) {
                 sb.append(strArray[i]);
             }
         }
-
         System.out.println(sb);
         return sb.toString();
     }
@@ -385,7 +350,7 @@ public class Tableaux {
             }
         }
         else {
-            System.out.println("size of list " + node.formulas + " <2 no contradiction can be established");
+            System.out.println("size of list " + node.formulas + " < 2 no contradiction can be established");
             return false;
         }
         return false;
@@ -401,8 +366,6 @@ public class Tableaux {
      */
     public boolean hasOtherOp(LinkedList<String> formulas) {
         for (String f : formulas) {
-
-
             //if f is an atomic statement (~A , A) then it has no operator so skip it
             if (f.length() <= 2) {
                 continue;
@@ -437,7 +400,7 @@ public class Tableaux {
             String[] temparr = parseFormula(f);
             String op = temparr[1];//get main operator for each formula
             if (!op.equals("V") && (f.length() > 2)) {
-                System.out.println(op + "in formula " + f + " doesnt = V and length>2");
+                System.out.println(op + " in formula " + f + " doesnt = V and length > 2");
                 return true;
             }
         }
@@ -547,8 +510,6 @@ public class Tableaux {
 
                 while (tmpLeft != rightIndex) {
                     tmpLeft++;
-
-
                     //if next character is an op
                     //if operator has smaller priority than smallest priority
                     if (operators.contains(s.charAt(tmpLeft))) {
@@ -578,8 +539,6 @@ public class Tableaux {
 
 
         return result;
-
-
     }
 
 
@@ -612,7 +571,6 @@ public class Tableaux {
 
         //if formula = A or ~A then return
         if(formula.length()<3){
-            System.out.println("this formula:  '" + formula + "' is atomic, no binary operator exits");
             output[0] = "";//A
             output[1] = "";//OP
             output[2] = "";//B
@@ -623,7 +581,6 @@ public class Tableaux {
 
         //if formula = ~(A&B)
         if ( (formula.charAt(0)=='~') && (formula.charAt(1)=='(') ){
-
             //left paren is at position 1
             int rightParen = 1;
             int count = 1;
@@ -646,8 +603,6 @@ public class Tableaux {
                 return output;
             }
         }
-
-
         formula=removeParenthesis(formula);
 
 
@@ -754,8 +709,6 @@ public class Tableaux {
 
 
 
-
-
     /**
      * Input: group of logic formulas and conclusion
      * Output: Tableaux proof
@@ -776,14 +729,9 @@ public class Tableaux {
      * @return true if there is a contradiction
      */
     public boolean parseTableaux(Node node) {
-        System.out.println(ANSI_GREEN+node.formulas+ANSI_RESET);
 
-        if (isContradiction(node)) {
-            System.out.println("CONTRADICTION");
+        if (isContradiction(node))
             return true;
-        }
-
-
 
 
         //while there is a formula in list whose main op is either ~,&,>,< break it up
@@ -792,10 +740,8 @@ public class Tableaux {
 
 
 
-            if (isContradiction(node)) {
-                System.out.println("CONTRADICTION");
-                return true;
-            }
+            if(isContradiction(node))
+            return true;
 
             //for each formula in the list
             for (int i = 0; i < node.formulas.size(); i++) {
@@ -806,10 +752,8 @@ public class Tableaux {
 
 
                 //if (formula = either ~A, A) then skip it
-                if ((f.get(i).length() <= 2)) {
-                    System.out.println("formula " + f.get(i) + " is atomic so skip it since it cannot be reduced further");
-                    continue;
-                }
+                if ((f.get(i).length() <= 2)) continue;
+
 
                 String[] parseformula = parseFormula(f.get(i));
                 String A = parseformula[0];
@@ -817,10 +761,8 @@ public class Tableaux {
                 String B = parseformula[2];
 
                 //if (formula op = V) then skip it
-                if (op.equals("V")) {
-                    System.out.println("formula " + f.get(i) + " is a DISJUNCTION, skip it since it cannot be reduced through reduction formulas");
-                    continue;
-                }
+                if (op.equals("V")) continue;
+
 
                 //NEGATIONS
                 if(f.get(i).charAt(0)=='~'){
@@ -856,7 +798,6 @@ public class Tableaux {
 
                         //AND: ~(A&B) <-> ~AV~B
                         if (op.equals("&")) {
-
                             A = "~" + A;
                             op = "V";
                             B = "~" + B;
@@ -868,7 +809,6 @@ public class Tableaux {
                         }
                         //OR: ~(AVB) <-> (~A&~B)
                         else if (op.equals("V")) {
-
                             A = "~" + A;
                             B = "~" + B;
 
@@ -910,20 +850,16 @@ public class Tableaux {
                 //if formula has operators other than DISJUNCTION and
                 //if there are no negations ~ in front
                 else if (!op.equals("V")) {
-                    System.out.println(f.get(i) + "  has a formula w/ operator other than V and has no ~");
-
                     f.remove(i);
 
 
                     //AND: (A&B) <-> A,B
                     if (op.equals("&")) {
-
                         f.add(A);
                         f.add(B);
                     }
                     //CONDITIONAL: A>B <-> ~AVB
                     else if (op.equals(">")) {
-
                         A = "~" + A;
                         op = "V";
 
@@ -932,7 +868,6 @@ public class Tableaux {
                     }
                     //EQUIVALENCE: A<B <-> (A&B)V(~A&~B)
                     else if (op.equals("<")) {
-
                         A = "(" + A + "&" + B + ")";
                         op = "V";
                         B = "(" + "~" + B + "&" + "~" + A + ")";
@@ -957,11 +892,8 @@ public class Tableaux {
 
             //if formula is a DISJUNCTION
             if (node.formulas.get(i).length()>2) {
-
-
                 String[] parseformula = parseFormula(node.formulas.get(i));
-                System.out.println("disjunct1: "+parseformula[0]);
-                System.out.println("disjunct2: "+parseformula[2]);
+
 
                 LinkedList<String> disjunct1 =new LinkedList<>();
                 LinkedList<String> disjunct2 =new LinkedList<>();
@@ -977,44 +909,19 @@ public class Tableaux {
                 disjunct1.add(parseformula[0]);
                 disjunct2.add(parseformula[2]);
 
-
-
                 Node nodeD1 = new Node(disjunct1,false);
                 Node nodeD2 = new Node(disjunct2,false);
-
-
-
-
 
                 node.setLeft(nodeD1);
                 node.setRight(nodeD2);
 
-
-
-
                 if(parseTableaux(node.left) && parseTableaux(node.right))
                     return true;
-
-
 
             }
         }
         return false;
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1095,5 +1002,4 @@ public class Tableaux {
         }
 
     }
-
 }
