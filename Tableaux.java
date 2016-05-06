@@ -239,58 +239,7 @@ public class Tableaux {
 
     }
 
-
-
-    /**
-     * level-order,BFS
-     */
-    public void levelOrderTraversal() {
-        java.util.Queue<Node> queue = new LinkedList<>();
-        if (root == null) return;
-        Node currentNode = root;
-        queue.add(currentNode);
-
-        int countCurrent = 1;
-        int countNext = 0;
-
-
-        while (!queue.isEmpty()) {
-            currentNode = queue.poll();
-            countCurrent--;
-            System.out.print(currentNode.formulas);
-
-
-            if (currentNode.left != null)
-                queue.add(currentNode.left);
-            if (currentNode.right != null)
-                queue.add(currentNode.right);
-
-
-            countNext = countNext + 2;
-            if (countCurrent == 0) {
-                countCurrent = countNext;
-                countNext = 0;
-                System.out.println();
-            }
-        }
-
-        System.out.println();
-    }
-
-    /**
-     * DFS or inorder traversal outputs string associated w/ each node
-     * @param node
-     * @param lr current object
-     */
-    public void inorder(Node node,String lr){
-        if(node!=null){
-            System.out.print(lr+" = ");
-            System.out.println(node.formulas);
-            inorder(node.right,lr+".right");
-            inorder(node.left,lr+".left");
-        }
-    }
-
+    
 
 
     public void insert(LinkedList<String> data) {root = insert(root, data);}
@@ -938,7 +887,20 @@ public class Tableaux {
 
 
         /*
+
+
+        OPERATORS:
+
+        ~ is "not"
+        V is "or"
+        & is "and"
+        > is "implication operator"
+        < is "biconditional"
+
+
+
         SOME PROOF TESTS:
+
 
 
 
@@ -958,7 +920,7 @@ public class Tableaux {
 
         formulasTest.add("P>R");
         formulasTest.add("Q>R");
-        formulasTest.add("(PVQ)>R");
+        formulasTest.add("~((PVQ)>R)");
 
 
         */
@@ -968,6 +930,7 @@ public class Tableaux {
 
 
 
+        //formulasTest.add("premise");
         formulasTest.add("P>R");
         formulasTest.add("Q>R");
         formulasTest.add("~((PVQ)>R)");
@@ -975,7 +938,7 @@ public class Tableaux {
         t.insert(formulasTest);
         System.out.println("root node = " + t.root.formulas);
         t.parseTableaux(t.root);
-        System.out.println("Print Tableaux :   ");
+
 
 
 
