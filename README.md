@@ -3,7 +3,7 @@
 
 ***Algorithm***
 
-**Input:** list of logical formulas called l in propositional logic
+**Input:** list of logical formulas in propositional logic
 
 **Output:** semantic tableau
 
