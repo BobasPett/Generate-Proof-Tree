@@ -275,7 +275,7 @@ public class Tableaux {
 
 
     /**
-     * @param node object has formulas which are checked
+     * @param node object has formulas which are checked for contradiction
      * @return true if both A and ~A is found in list of statements
      */
     public boolean isContradiction(Node node) {
@@ -406,7 +406,9 @@ public class Tableaux {
     }
 
     /**
-     * @return the string s without unnecessary parenthesis
+     * 
+     * @param s string w/ parentheses
+     * @return the string without unnecessary parenthesis
      */
     public String removeParenthesis(String s) {
 
