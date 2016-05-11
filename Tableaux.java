@@ -1,7 +1,4 @@
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -11,6 +8,9 @@ public class Tableaux {
 
 
 
+
+
+   
 
 
     private final StringBuilder table = new StringBuilder();
@@ -30,6 +30,7 @@ public class Tableaux {
 
 
 
+
     public Node root;
     int totalNodes=0;
     ArrayList<Node> listOfNodes=new ArrayList<>();
@@ -37,14 +38,13 @@ public class Tableaux {
 
     int canvasWidth=20;
     int canvasHeight=20;
-    Color c1 = new Color(35, 38, 236);
-    int c1i= c1.getRGB();
-    File image = new File("Image.png");
-    BufferedImage img = new BufferedImage(canvasHeight, canvasWidth, BufferedImage.TYPE_INT_ARGB);
+   
 
 
 
-    public Tableaux() {root = null;}
+    public Tableaux() {
+        root = null;
+    }
     public class Node {
 
         private boolean contradiction;
@@ -153,15 +153,17 @@ public class Tableaux {
      * @return string with replacements
      */
     public static String replace(String s, char replace, String with){
-        if (s.length() < 1) return s;
-        int sLength=s.length();
-        for (int i = 0; i < sLength; i++) {
-            if (s.charAt(i) == replace) {
+        int i=0;
+        while(i != s.length() ){
+            if(s.charAt(i)==replace) {
                 String stuffAfter = s.substring(i + 1, s.length());
-                s = s.substring(0, i) + with + stuffAfter;
-                return replace(s, replace, with);
+                String stuffBefore = s.substring(0,i);
+                s =  stuffBefore + with + stuffAfter;//insert string for the 'replace' character
+                i = i + with.length();
             }
+            else i++;
         }
+
         return s;
     }
 
@@ -192,16 +194,15 @@ public class Tableaux {
     /**
      * set (x,y) coordinates for each node in tree
      * @param node
-     * @param depth
-     * @param hbetween
+     * @param depth 
+     * @param hbetween height between each horizontal layer 
      */
-    public void inorderTraversal(Node node, int depth,int hbetween) {
+    public void inorderTraversal(Node node,int depth,int hbetween) {
         if (node != null) {
-            inorderTraversal(node.left, depth + hbetween,hbetween);
+            inorderTraversal(node.left, depth + hbetween , hbetween);
             node.x = totalNodes++;
             node.y=depth;
-            img.setRGB(node.x,node.y,c1i);
-            inorderTraversal(node.right, depth + hbetween,hbetween);
+            inorderTraversal(node.right, depth + hbetween, hbetween);
         }
     }
 
@@ -239,7 +240,7 @@ public class Tableaux {
 
     }
 
-    
+
 
 
     public void insert(LinkedList<String> data) {root = insert(root, data);}
@@ -315,10 +316,10 @@ public class Tableaux {
      */
     public boolean hasOtherOp(LinkedList<String> formulas) {
         for (String f : formulas) {
+
             //if f is an atomic statement (~A , A) then it has no operator so skip it
-            if (f.length() <= 2) {
-                continue;
-            }
+            if (f.length() <= 2) continue;
+
 
 
             //if f is ~(...)
@@ -340,9 +341,8 @@ public class Tableaux {
 
                 //check if leftmost parenthesis pairs with a parenthesis
                 // at the end of the formula
-                if (rightParen == (f.length() - 1)) {
-                    return true;
-                }
+                if (rightParen == (f.length() - 1)) return true;
+
             }
 
 
@@ -544,7 +544,7 @@ public class Tableaux {
             }
 
             // if leftmost parenthesis pairs with a parenthesis
-            // at the end of the formula then ~ is operator
+            // at the end of the formula then ~ is the operator
             if (rightParen == (formula.length() - 1)) {
                 output[0] = "";//A
                 output[1] = "" + formula.charAt(0);//OP
@@ -686,11 +686,10 @@ public class Tableaux {
         //while there is a formula in list whose main op is either ~,&,>,< break it up
         while (hasOtherOp(node.formulas)) {
 
-
-
+            
 
             if(isContradiction(node))
-            return true;
+                return true;
 
             //for each formula in the list
             for (int i = 0; i < node.formulas.size(); i++) {
@@ -699,15 +698,14 @@ public class Tableaux {
 
 
 
-
                 //if (formula = either ~A, A) then skip it
                 if ((f.get(i).length() <= 2)) continue;
 
 
-                String[] parseformula = parseFormula(f.get(i));
-                String A = parseformula[0];
-                String op = parseformula[1];
-                String B = parseformula[2];
+                String[] parsedFormula = parseFormula(f.get(i));
+                String A = parsedFormula[0];
+                String op = parsedFormula[1];
+                String B = parsedFormula[2];
 
                 //if (formula op = V) then skip it
                 if (op.equals("V")) continue;
@@ -735,60 +733,40 @@ public class Tableaux {
                     if (getMatch(f.get(i),1)==(f.get(i).length()-1)) {
                         //EX. ~(A&B) then negatedFormula = A&B
                         String negatedFormula = f.get(i).substring(2, f.get(i).length() - 1);
-                        parseformula = parseFormula(negatedFormula);
+                        parsedFormula = parseFormula(negatedFormula);
 
-                        A = parseformula[0];
-                        op = parseformula[1];
-                        B = parseformula[2];
-
-
+                        A = parsedFormula[0];
+                        op = parsedFormula[1];
+                        B = parsedFormula[2];
 
                         f.remove(i);
 
                         //AND: ~(A&B) <-> ~AV~B
                         if (op.equals("&")) {
-                            A = "~" + A;
-                            op = "V";
-                            B = "~" + B;
-
                             //~AV~B
-                            f.add(A + op + B);
-
-
+                            f.add("~" + A + "V" + "~" + B);
                         }
                         //OR: ~(AVB) <-> (~A&~B)
                         else if (op.equals("V")) {
-                            A = "~" + A;
-                            B = "~" + B;
-
                             //~A&~B
-                            f.add(A);
-                            f.add(B);
-
-
+                            f.add("~" + A);
+                            f.add("~" + B);
                         }
                         //CONDITIONAL: ~(A>B) <-> A&~B
                         else if (op.equals(">")) {
-                            B = "~" + B;
-
                             //~B&A
                             f.add(A);
-                            f.add(B);
-
-
+                            f.add("~" + B);
                         }
                         //EQUIVALENCE: ~(A<B) <-> (A&~B)V(~A&B)
                         else if (op.equals("<")) {
-                            A = "(" + A + "&" + "~" + B + ")";
-                            op = "V";
-                            B = "(" + B + "&" + "~" + A + ")";
-
                             //(A&~B)V(B&~A)
-                            f.add(A + op + B);
-
+                            f.add("(" + A + "&" + "~" + B + ")" + "V" + "(" + B + "&" + "~" + A + ")");
                         }
-                        resolveNegations(node);
 
+                        resolveNegations(node);
+                        if(isContradiction(node))
+                            return true;
 
 
                     }//end if
@@ -801,29 +779,27 @@ public class Tableaux {
                 else if (!op.equals("V")) {
                     f.remove(i);
 
-
                     //AND: (A&B) <-> A,B
                     if (op.equals("&")) {
+                        //A,B
                         f.add(A);
                         f.add(B);
                     }
                     //CONDITIONAL: A>B <-> ~AVB
                     else if (op.equals(">")) {
-                        A = "~" + A;
-                        op = "V";
-
-                        f.add(A + op + B);
+                        //~AVB
+                        f.add("~" + A + "V" + B);
 
                     }
                     //EQUIVALENCE: A<B <-> (A&B)V(~A&~B)
                     else if (op.equals("<")) {
-                        A = "(" + A + "&" + B + ")";
-                        op = "V";
-                        B = "(" + "~" + B + "&" + "~" + A + ")";
-
-                        f.add(A + op + B);
-
+                        //(A&B)V(~A&~B)
+                        f.add("(" + A + "&" + B + ")" + "V" + "(" + "~"+A + "&" + "~"+B + ")");
                     }
+
+                    resolveNegations(node);
+                    if(isContradiction(node))
+                        return true;
 
 
 
@@ -867,8 +843,10 @@ public class Tableaux {
                 if(parseTableaux(node.left) && parseTableaux(node.right))
                     return true;
 
-            }
-        }
+            }//end if
+            
+        }//end for
+        
         return false;
     }
 
@@ -922,6 +900,10 @@ public class Tableaux {
         formulasTest.add("Q>R");
         formulasTest.add("~((PVQ)>R)");
 
+        formulasTest.add("~(P<Q)");
+        formulasTest.add("~(P<~Q)");
+
+
 
         */
 
@@ -931,9 +913,12 @@ public class Tableaux {
 
 
         //formulasTest.add("premise");
-        formulasTest.add("P>R");
-        formulasTest.add("Q>R");
-        formulasTest.add("~((PVQ)>R)");
+
+        formulasTest.add("(~AVD)>(B>F)");
+        formulasTest.add("(BVC)>(AVE)");
+        formulasTest.add("AVB");
+        formulasTest.add("~A");
+        formulasTest.add("~(EVF)");
 
         t.insert(formulasTest);
         System.out.println("root node = " + t.root.formulas);
@@ -958,11 +943,7 @@ public class Tableaux {
 
 
 
-        try {ImageIO.write(t.img, "PNG", t.image);}
-        catch (Exception e) {
-            System.out.println("not working");
-            System.exit(1);
-        }
+        
 
     }
 }
