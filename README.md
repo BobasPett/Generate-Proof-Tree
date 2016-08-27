@@ -7,22 +7,22 @@
 
 **Output:** semantic tableau
 
-```python
-Tableaux(formulas):
-  if formulas contain contradiction:
-        return True
+```
+Tableaux(formulas)
+    IF formulas contain contradiction
+        RETURN TRUE
 
-    reapeat:
-        if there exists a formula f w/ operator other than disjuntion in formulas:
-            replace f w/ the matching logical equivalence
+    REPEAT
+        IF there exists a formula f with operator other than disjuntion IN formulas
+            replace f with the matching logical equivalence
 
-        else:
-            break
+        ELSE
+            BREAK
 
-    for each formula f in formulas:
-        if f is a disjuntion:
-            if Tableaux(left disjunct) and Tableaux(right disjunct):
-                return True
+    FOR each formula f IN formulas
+        IF f is a disjuntion
+            IF Tableaux(left disjunct) AND Tableaux(right disjunct)
+                RETURN TRUE
   ```                
                   
 
